@@ -72,8 +72,8 @@ Direct=0;
             m(ant(1),ant(2)) = 1 - m(ant(1),ant(2));
             p = rec(ant(1), ant(2));
             p.FaceColor = [1, 1, 1] - p.FaceColor;
-            step = step + 1;
-            steptxt.String = {'step # ', num2str(step)};
+            step =+
+            steptxt.String = {'step # '};
             drawnow
         end
     end
