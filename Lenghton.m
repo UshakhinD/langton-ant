@@ -9,7 +9,7 @@ newcount = 0; % temp var for mirror method
 expand = 10;
 for i=0:count-1
     for j=0:count-1
-        rec(i+1,j+1)=rectangle('Position',[i,j,1,1],'FaceColor','w', 'EdgeColor', 'k','LineWidth', 1);
+        rec(i+1,j+1)=rectangle('Position',[i,j,1,1],'FaceColor','w', 'EdgeColor', 'k','LineWidth', 0.1);
     end
 end
 axis tight
@@ -58,6 +58,7 @@ Direct=0;
                        end
                        ant(1) = ant(1) + expand/2;
                        ant(2) = ant(2) + expand/2;
+                       count = newcount;
                     end
             end
             if (m(ant(1),ant(2)) == 1)
