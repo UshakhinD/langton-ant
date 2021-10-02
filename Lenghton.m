@@ -1,10 +1,11 @@
 function Lenghton
 m = ones(20,20);
-f=figure('Units','pixels','Position',[200,100,500,500],'menubar','none');
-a=axes('Units','pixels','position',[50,10,390,390],'XTick',[],'YTick',[]);
-s=uicontrol('Style','pushbutton','Position',[50,420,100,30],'String','Start','Callback',@start);
-pop = uicontrol('Style', 'popup','String', {'Stop','Mirror','Expand'},'Position', [200,400,100,45]);
-steptxt = uicontrol('Style', 'text','Position', [330,420,100,30]);
+f=figure('Units','pixels','Position',[200,100,600,600],'menubar','none');
+a=axes('Units','pixels','position',[50,10,500,500],'XTick',[],'YTick',[]);
+s=uicontrol('Style','pushbutton','Position',[50,540,100,30],'String','Start','Callback',@start);
+popExpnd = uicontrol('Style', 'popup','String', {'Stop','Mirror','Expand'},'Position', [180,520,80,45]);
+popSpeed = uicontrol('Style', 'popup','String', {'X1','X2','X3','X5','X10','X20'},'Position', [280,520,80,45]);
+steptxt = uicontrol('Style', 'text','Position', [400,540,100,30]);
 steptxt.String = {'step # '};
 count = 20; % demansion of field
 newcount = 0; % temp var for mirror method
@@ -12,7 +13,7 @@ expand = 10;
 step = 0;
 for i=0:count-1
     for j=0:count-1
-        rec(i+1,j+1)=rectangle('Position',[i,j,1,1],'FaceColor','w', 'EdgeColor', 'k','LineWidth', 0.1);
+        rec(i+1,j+1)=rectangle('Position',[i,j,1,1],'FaceColor','w', 'EdgeColor', 'k','LineWidth', 1);
     end
 end
 axis tight
@@ -30,7 +31,7 @@ Direct=0;
                 case 3
                     ant(1)=ant(1)-1;
             end
-            switch pop.Value
+            switch popExpnd.Value
                 case 1
                     if(ant(1)>count && ant(1)<1 && ant(2)>count && ant(2)<1)
                         return;
@@ -56,7 +57,7 @@ Direct=0;
                        cla;
                        for i=1:newcount
                            for j=1:newcount
-                               rec(i,j)=rectangle('Position',[i,j,1,1],'FaceColor',[m(i,j),m(i,j),m(i,j)], 'EdgeColor', 'k','LineWidth', 1);
+                               rec(i,j)=rectangle('Position',[i,j,1,1],'FaceColor',[m(i,j),m(i,j),m(i,j)], 'EdgeColor', 'k','LineWidth', 0.1);
                            end
                        end
                        ant(1) = ant(1) + expand/2;
@@ -74,7 +75,30 @@ Direct=0;
             p.FaceColor = [1, 1, 1] - p.FaceColor;
             step = step + 1;
             steptxt.String = {'step # ', num2str(step)};
-            drawnow
+            switch popSpeed.Value
+                case 1
+                    drawnow
+                case 2
+                    if(mod(step,2) == 1)
+                        drawnow
+                    end
+                case 3
+                    if(mod(step,3) == 1)
+                        drawnow
+                    end
+                case 4
+                    if(mod(step,5) == 1)
+                        drawnow
+                    end
+                case 5
+                    if(mod(step,10) == 1)
+                        drawnow
+                    end
+                case 6
+                    if(mod(step,20) == 1)
+                        drawnow
+                    end
+            end
         end
     end
 end
