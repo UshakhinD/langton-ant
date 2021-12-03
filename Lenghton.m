@@ -191,7 +191,7 @@ rules = 0;
             step = step + 1;
             steptxt.String = {'step # ', num2str(step)};
             
-            drawnow;
+            Speedcontrol;
         end
     end
 
