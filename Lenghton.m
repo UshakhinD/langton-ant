@@ -7,6 +7,7 @@ popExpnd = uicontrol('Style', 'popup','String', {'Stop','Mirror','Expand'},'Valu
 popSpeed = uicontrol('Style', 'popup','String', {'X1','X2','X3','X5','X10','X20'},'Position', [280,520,80,45]);
 steptxt = uicontrol('Style', 'text','Position', [360,540,60,30]);
 Rule = uicontrol('Style', 'edit','String','RL', 'Position', [420,540,100,30]);
+Steprul = uicontrol('Style', 'edit', 'String', '0', 'Position', [420, 580, 100, 30]);
 steptxt.String = {'step # '};
 count = 20; % start demansion of field
 newcount = 0; % temp var for mirror method
@@ -51,9 +52,8 @@ rules = 0;
         else
             Hexstart;
         end
-       
+        
     end
-
     function Recstart(~,~)
         while 1
             switch Direct
@@ -108,7 +108,7 @@ rules = 0;
             end
             m(ant(1),ant(2)) = mod(m(ant(1),ant(2))+1,length(rules));
             p = shape(ant(1), ant(2));
-            p.FaceColor = colors(m(ant(1),ant(2))+1);
+            set(p,'facecolor',colors(m(ant(1),ant(2))+1));
             step = step + 1;
             steptxt.String = {'step # ', num2str(step)};
             Speedcontrol;
@@ -118,9 +118,20 @@ rules = 0;
     function Hexstart(~,~)
         hexCountRaw = size(m,1);
         hexCountCol = size(m,2);
-        expandRaw = 2;   %floor(hexCountRaw/2)
-        expandCol = 2;
+        expandRaw = 16;   %floor(hexCountRaw/2)
+        expandCol = 8;
+        missSteps = str2num(Steprul.String);
+        paintflag = false;
         while 1
+            dopaint = missSteps < step;
+            if  dopaint && ~paintflag && missSteps > 0
+                cla;
+                for i=1:size(m, 1)
+                    for j=1:size(m, 2)
+                        shape(i,j)= patch((1-mod(i,2))*1.5 + [0,-1/2,0,1,3/2,1] + j*3, (sqrt(3)/2)*i + [0,sqrt(3)/2,sqrt(3),sqrt(3),sqrt(3)/2,0], colors(m(i,j)+1));
+                    end
+                end
+            end
             switch Direct
                 case 0
                     ant(1)=ant(1)+2;
@@ -152,26 +163,27 @@ rules = 0;
                         ant(1)=ant(1)+1;
                         ant(2)=ant(2)-1;
                     end
-            end 
-
-                if(ant(1)>hexCountRaw || ant(1)<1 || ant(2)>hexCountCol || ant(2)<1) % if out of field => expand field
-                    newhexCountRaw = hexCountRaw + expandRaw;
-                    newhexCountCol = hexCountCol + expandCol;
-                    newm = zeros(newhexCountRaw,newhexCountCol);
-                    %rec = zeros(newcount);
-                    newm(((newhexCountRaw-hexCountRaw)/2+1):newhexCountRaw-((newhexCountRaw-hexCountRaw)/2),((newhexCountCol-hexCountCol)/2+1):newhexCountCol-((newhexCountCol-hexCountCol)/2)) = m;
-                    m = newm;
+            end
+            if(ant(1)>hexCountRaw || ant(1)<1 || ant(2)>hexCountCol || ant(2)<1) % if out of field => expand field
+                newhexCountRaw = hexCountRaw + expandRaw;
+                newhexCountCol = hexCountCol + expandCol;
+                newm = zeros(newhexCountRaw,newhexCountCol);
+                %rec = zeros(newcount);
+                newm(((newhexCountRaw-hexCountRaw)/2+1):newhexCountRaw-((newhexCountRaw-hexCountRaw)/2),((newhexCountCol-hexCountCol)/2+1):newhexCountCol-((newhexCountCol-hexCountCol)/2)) = m;
+                m = newm;
+                if dopaint
                     cla;
                     for i=1:newhexCountRaw
                         for j=1:newhexCountCol
                             shape(i,j)= patch((1-mod(i,2))*1.5 + [0,-1/2,0,1,3/2,1] + j*3, (sqrt(3)/2)*i + [0,sqrt(3)/2,sqrt(3),sqrt(3),sqrt(3)/2,0], colors(m(i,j)+1));
                         end
                     end
-                    ant(1) = ant(1) + expandRaw/2;
-                    ant(2) = ant(2) + expandCol/2;
-                    hexCountRaw = newhexCountRaw;
-                    hexCountCol = newhexCountCol;
                 end
+                ant(1) = ant(1) + expandRaw/2;
+                ant(2) = ant(2) + expandCol/2;
+                hexCountRaw = newhexCountRaw;
+                hexCountCol = newhexCountCol;
+            end
             
             R = rules(m(ant(1),ant(2))+1);
             if (strcmp(R,'B'))
@@ -186,12 +198,13 @@ rules = 0;
                 Direct = mod(Direct +5, 6);
             end
             m(ant(1),ant(2)) = mod(m(ant(1),ant(2))+1,length(rules));
-            p = shape(ant(1), ant(2));
-            set(p,'facecolor',colors(m(ant(1),ant(2))+1));
+            if dopaint
+                p = shape(ant(1), ant(2));
+                set(p,'facecolor',colors(m(ant(1),ant(2))+1));
+                Speedcontrol;
+            end
             step = step + 1;
             steptxt.String = {'step # ', num2str(step)};
-            
-            Speedcontrol;
         end
     end
 
